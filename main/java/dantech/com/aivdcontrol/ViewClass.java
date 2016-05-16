@@ -36,7 +36,7 @@ public class ViewClass {
     }
 
     public void touchEvent(MotionEvent event){
-        if(menu == null || !menu.isMenuOpen())
+        if((menu == null || !menu.isMenuOpen()) && event.getAction() == MotionEvent.ACTION_DOWN)
             for(Button b : buttons)
                 b.touchEvent(event);
 

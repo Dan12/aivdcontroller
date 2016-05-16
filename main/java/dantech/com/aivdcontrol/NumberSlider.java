@@ -54,10 +54,10 @@ public class NumberSlider implements Drawable {
 
         if(touchX >= xPos && touchX <= xPos+width && touchY >= yPos && touchY <= yPos+height){
             if(intValue)
-                val = (int) Functions.map(e.getX(), xPos, xPos + width, minVal, maxVal);
+                val = (int) Functions.map(touchX, xPos, xPos + width, minVal, maxVal);
             else
-                val = (float) Functions.map(e.getX(), xPos, xPos + width, minVal, maxVal);
-            sliderX = (int) e.getX();
+                val = (float) Functions.map(touchX, xPos, xPos + width, minVal, maxVal);
+            sliderX = (int) touchX;
             if(touchListener != null)
                 touchListener.onTouch();
             return true;
@@ -71,6 +71,8 @@ public class NumberSlider implements Drawable {
 
     @Override
     public void drawElements(Canvas canvas, Paint paint, float density) {
+        paint.setColor(Color.BLACK);
+        canvas.drawRect((xPos-padding-2)*density, (yPos-padding-2)*density, (xPos+width+padding+2)*density, (yPos+height+padding+2)*density, paint);
         paint.setColor(Color.LTGRAY);
         canvas.drawRect((xPos-padding)*density, (yPos-padding)*density, (xPos+width+padding)*density, (yPos+height+padding)*density, paint);
 

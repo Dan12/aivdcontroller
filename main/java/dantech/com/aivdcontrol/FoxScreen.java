@@ -39,6 +39,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     private boolean isFollow = false;
 
+    public static boolean verbose = false;
+
     public FoxScreen(Context context, MainActivity activity){
         super(context);
 
@@ -46,8 +48,6 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
         mHolder = getHolder();
         mHolder.addCallback(this);
-        System.out.println(mHolder);
-        System.out.println("Initializing surfaceview");
 
         viewClass = new DrawView();
 
@@ -118,7 +118,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        System.out.println("Got Preview Data");
+        if(verbose)
+            System.out.println("Got Preview Data");
         if (!isPreviewRunning)
             return;
 
@@ -144,8 +145,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
         }
 
         long endTime = System.nanoTime();
-        System.out.print("Time to get pixel data: ");
-        System.out.println((endTime - startTime) / 1000000);
+        if(verbose)
+            System.out.println("Time to get pixel data: "+((endTime - startTime) / 1000000));
         startTime = System.nanoTime();
     }
 
@@ -213,21 +214,22 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
         @Override
         public void setupView(int thisInd, int curInd){
-            if(curInd == 2 || curInd == 3) {
+            if((curInd == 2 || curInd == 3) && thisInd == curInd) {
+                mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
                 initMenu();
 
                 if(!isPreviewRunning)
                     mCamera.startPreview();
                 isPreviewRunning = true;
 
-                mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 if(curInd == 3)
                     isFollow = true;
                 else
                     isFollow = false;
                 mainActivity.toastMessage("Is Following: "+isFollow);
             }
-            else {
+            else if (curInd != 2 && curInd != 3){
                 mCamera.stopPreview();
                 isPreviewRunning = false;
             }
@@ -236,7 +238,6 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
         @Override
         public void drawElements(Canvas canvas, Paint paint, float density) {
 
-            System.out.println("Draw and Compute");
             long st = System.nanoTime();
             if(yuvData != null) {
                 int res = ObjectDetector.resolution;
@@ -253,17 +254,19 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
             drawObjectDetector(canvas);
 
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(24*density);
+            canvas.drawText((isFollow ? "Follow" : "Foxtrot"), width+10*density, 150*density, paint);
+
             menu.drawElements(canvas, paint, density);
 
             sendBTMessage();
 
-            paint.setColor(Color.BLACK);
-            paint.setTextSize(24*density);
-            canvas.drawText((isFollow ? "Follow" : "Foxtrot"), width+10, 100*density, paint);
-
             long et = System.nanoTime();
-            System.out.println("Drawing and Computations completed in " + ((et - st) / 1000000) + "ms");
-            //invalidate();
+            if(verbose) {
+                System.out.println("Draw and Compute");
+                System.out.println("Drawing and Computations completed in " + ((et - st) / 1000000) + "ms");
+            }
         }
 
         @Override

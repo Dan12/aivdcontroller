@@ -105,7 +105,7 @@ public class ScriptScreen extends  ViewClass {
             @Override
             void onTouch() {
                 try {
-                    MainActivity.btHandler.sendData("6,"+String.format("%3.8f,%3.8f,%3.8f",comp.getBearing(),gps.getLatitude(),gps.getLongitude()));
+                    MainActivity.btHandler.sendData(String.format("6,%3.8f,%3.8f,%3.8f",comp.getBearing(),gps.getLatitude(),gps.getLongitude()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -116,7 +116,8 @@ public class ScriptScreen extends  ViewClass {
 
     @Override
     public void setupView(int thisInd, int curInd){
-        mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if(thisInd == curInd)
+            mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override

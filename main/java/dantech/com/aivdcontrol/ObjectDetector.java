@@ -47,7 +47,8 @@ public class ObjectDetector {
         setBestRect();
 
         long et = System.nanoTime();
-        System.out.println("Edge Detect run in "+((et-st)/1000000)+"ms");
+        if(FoxScreen.verbose)
+            System.out.println("Edge Detect run in "+((et-st)/1000000)+"ms");
     }
 
     // TODO: incorporate previous position in fitness function

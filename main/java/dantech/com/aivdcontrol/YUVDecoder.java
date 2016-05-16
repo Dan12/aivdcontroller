@@ -52,7 +52,9 @@ public class YUVDecoder {
             }
         }
         long et = System.nanoTime();
-        System.out.println("Decode time: "+((et-st)/1000000)+"ms");
+
+        if(FoxScreen.verbose)
+            System.out.println("Decode time: "+((et-st)/1000000)+"ms");
         return ret;
     }
 }
