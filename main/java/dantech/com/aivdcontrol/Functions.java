@@ -3,7 +3,7 @@ package dantech.com.aivdcontrol;
 /**
  * Created by Danweb on 5/16/16.
  */
-public class Function {
+public class Functions {
 
     private static int[][] pointerNums = new int[][]{
             {1,-1},

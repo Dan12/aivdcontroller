@@ -26,9 +26,7 @@ public class MainActivity extends Activity {
 
         view.setBackgroundColor(Color.WHITE);
 
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        view.initDimensions(dm.density, dm.widthPixels, dm.heightPixels);
+        setDisplayMetrics();
 
         view.addView(new ControlScreen(this));
         view.addView(new ScriptScreen(this));
@@ -74,7 +72,15 @@ public class MainActivity extends Activity {
     }
 
     public void setOrientation(int orientation){
+
         setRequestedOrientation(orientation);
+        setDisplayMetrics();
+    }
+
+    public void setDisplayMetrics(){
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        view.initDimensions(dm.density, dm.widthPixels, dm.heightPixels);
     }
 
 }

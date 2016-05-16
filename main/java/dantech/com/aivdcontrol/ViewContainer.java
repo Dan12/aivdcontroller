@@ -1,6 +1,7 @@
 package dantech.com.aivdcontrol;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.MotionEvent;
@@ -23,7 +24,7 @@ public class ViewContainer extends View{
     public static float densViewHeight;
     private int viewOn = 0;
 
-    public ViewContainer(Context context) {
+    public ViewContainer(MainActivity context) {
         super(context);
         paint = new Paint();
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -36,7 +37,7 @@ public class ViewContainer extends View{
             void onTouch() {
                 if(views.size() > 0) {
                     viewOn = 0;
-                    views.get(viewOn).setupView();
+                    changeView();
                 }
             }
         });
@@ -48,7 +49,7 @@ public class ViewContainer extends View{
             void onTouch() {
                 if(views.size() > 1) {
                     viewOn = 1;
-                    views.get(viewOn).setupView();
+                    changeView();
                 }
             }
         });
@@ -60,7 +61,7 @@ public class ViewContainer extends View{
             void onTouch() {
                 if(views.size() > 2) {
                     viewOn = 2;
-                    views.get(viewOn).setupView();
+                    changeView();
                 }
             }
         });
@@ -72,7 +73,7 @@ public class ViewContainer extends View{
             void onTouch() {
                 if(views.size() > 3) {
                     viewOn = 3;
-                    views.get(viewOn).setupView();
+                    changeView();
                 }
             }
         });
@@ -86,6 +87,10 @@ public class ViewContainer extends View{
             }
         });
         viewNavigation.addButton(b5);
+    }
+
+    private void changeView(){
+        views.get(viewOn).setupView();
     }
 
     public void addView(ViewClass v){
@@ -116,7 +121,10 @@ public class ViewContainer extends View{
         densViewWidth = width/density;
         densViewHeight = height/density;
 
-        viewNavigation = new Menu(10,(int)densViewHeight-50);
+        if(viewHeight > viewWidth)
+            viewNavigation = new Menu(10,(int)densViewHeight-50);
+        else
+            viewNavigation = new Menu((int)densViewWidth-50,(int)densViewHeight-50);
 
         initButtons();
     }

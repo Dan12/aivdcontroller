@@ -23,8 +23,17 @@ public class Button implements Drawable{
         height = 50;
         text = t;
 
-        if(xPos == -1)
-            xPos = ((int)ViewContainer.densViewWidth-width)/2;
+        if(xPos == -1) {
+            if(ViewContainer.densViewHeight > ViewContainer.densViewWidth || text.equals("Back"))
+                xPos = ((int) ViewContainer.densViewWidth - width) / 2;
+            else {
+                xPos = 30;
+                if(yPos > 210){
+                    yPos-=210;
+                    xPos+=250;
+                }
+            }
+        }
     }
 
     public void touchEvent(MotionEvent event){
@@ -53,6 +62,8 @@ public class Button implements Drawable{
             shadowPaint.setShadowLayer(10.0f, 0.0f, 2.0f*density, 0xFF000000);
         }
 
+        int xPos = this.xPos;
+        int yPos = this.yPos;
         canvas.drawRect(xPos*density,yPos*density,(xPos+width)*density,(yPos+height)*density, shadowPaint);
         paint.setColor(Color.BLUE);
         canvas.drawRect(xPos*density,yPos*density,(xPos+width)*density,(yPos+height)*density, paint);

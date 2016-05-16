@@ -18,8 +18,7 @@ public class FoxScreen extends ViewClass{
 
     @Override
     public void setupView(){
-        //mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
     @Override
