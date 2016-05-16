@@ -51,4 +51,6 @@ public class ViewClass {
     public void recievedBTMessage(String message){
 
     }
+
+    public void setupView(){}
 }

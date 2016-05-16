@@ -35,51 +35,54 @@ public class BluetoothHandler {
     }
 
     void findBT(){
-        findingBluetooth = true;
-        mmInputStream = null;
-        mmOutputStream = null;
-        mmDevice = null;
-        mmSocket = null;
-        stopWorker = true;
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(mBluetoothAdapter == null) {
-            //System.out.println("No bluetooth adapter available");
-            mainActivity.toastMessage("No bluetooth adapter available");
-        }
-
-        if(!mBluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            mainActivity.startActivityForResult(enableBluetooth, 0);
-        }
-
-        final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        stopDeviceFinder = false;
-        if (pairedDevices.size() > 0) {
-            CharSequence devices[] = new CharSequence[pairedDevices.size()];
-            int i = 0;
-            for (BluetoothDevice device : pairedDevices) {
-                devices[i] = device.getName();
-                i++;
+        if(!findingBluetooth) {
+            findingBluetooth = true;
+            mmInputStream = null;
+            mmOutputStream = null;
+            mmDevice = null;
+            mmSocket = null;
+            stopWorker = true;
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter == null) {
+                //System.out.println("No bluetooth adapter available");
+                mainActivity.toastMessage("No bluetooth adapter available");
             }
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-            builder.setTitle("Pick a device");
-            builder.setItems(devices, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    int k = 0;
-                    for (BluetoothDevice device : pairedDevices) {
-                        if(i == k) {
-                            tryConnection(device);
-                            break;
-                        }
-                        k++;
-                    }
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                mainActivity.startActivityForResult(enableBluetooth, 0);
+            }
 
+            final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            stopDeviceFinder = false;
+            if (pairedDevices.size() > 0) {
+                CharSequence devices[] = new CharSequence[pairedDevices.size()];
+                int i = 0;
+                for (BluetoothDevice device : pairedDevices) {
+                    devices[i] = device.getName();
+                    i++;
                 }
-            });
 
-            builder.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                builder.setTitle("Pick a device");
+                builder.setItems(devices, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int k = 0;
+                        for (BluetoothDevice device : pairedDevices) {
+                            if (i == k) {
+                                tryConnection(device);
+                                break;
+                            }
+                            k++;
+                        }
+
+                    }
+                });
+
+                builder.show();
+            }
+
         }
 
     }
@@ -157,23 +160,6 @@ public class BluetoothHandler {
                                     fullMessage+=data;
                                 else{
                                     System.out.println("Full message"+fullMessage);
-//                                    dv.verbose = fullMessage;
-//                                    if(dv.isPlaying){
-//                                        int[] point = dataRecorder.getPoint();
-//                                        if(point[0] != Integer.MIN_VALUE) {
-//                                            dv.knobXDisp = point[0];
-//                                            dv.knobYDisp = point[1];
-//                                        }
-//                                        else{
-//                                            dv.isPlaying = false;
-//                                            dv.knobXDisp = 0;
-//                                            dv.knobYDisp = 0;
-//                                            toastMessage("Finished recording");
-//                                        }
-//                                    }
-//                                    sendData(String.format("%d,%d" , (int)DrawingView.map(dv.knobXDisp, -dv.squareHalfSide, dv.squareHalfSide, -200, 200),(int)DrawingView.map(dv.knobYDisp, -dv.squareHalfSide, dv.squareHalfSide, -200, 200)));
-//                                    if(dv.isRecording)
-//                                        dataRecorder.recordPoint(dv.knobXDisp, dv.knobYDisp);
                                     mainActivity.getViewContainer().recievedBTMessage(fullMessage);
                                     fullMessage = "";
                                 }

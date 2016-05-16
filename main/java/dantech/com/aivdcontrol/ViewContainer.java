@@ -34,8 +34,10 @@ public class ViewContainer extends View{
         b1.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                if(views.size() > 0)
+                if(views.size() > 0) {
                     viewOn = 0;
+                    views.get(viewOn).setupView();
+                }
             }
         });
         viewNavigation.addButton(b1);
@@ -44,8 +46,10 @@ public class ViewContainer extends View{
         b2.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                if(views.size() > 1)
+                if(views.size() > 1) {
                     viewOn = 1;
+                    views.get(viewOn).setupView();
+                }
             }
         });
         viewNavigation.addButton(b2);
@@ -54,8 +58,10 @@ public class ViewContainer extends View{
         b3.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                if(views.size() > 2)
+                if(views.size() > 2) {
                     viewOn = 2;
+                    views.get(viewOn).setupView();
+                }
             }
         });
         viewNavigation.addButton(b3);
@@ -64,8 +70,10 @@ public class ViewContainer extends View{
         b4.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                if(views.size() > 3)
+                if(views.size() > 3) {
                     viewOn = 3;
+                    views.get(viewOn).setupView();
+                }
             }
         });
         viewNavigation.addButton(b4);

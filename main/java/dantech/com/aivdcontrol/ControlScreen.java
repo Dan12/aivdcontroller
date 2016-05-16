@@ -1,6 +1,7 @@
 package dantech.com.aivdcontrol;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -178,6 +179,11 @@ public class ControlScreen extends ViewClass{
             canvas.drawText("Ready to play/record", 30, swivelViewYCent-10-35*(lines.length+3), paint);
 
         startViewMenu.drawElements(canvas, paint, density);
+    }
+
+    @Override
+    public void setupView(){
+        mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override

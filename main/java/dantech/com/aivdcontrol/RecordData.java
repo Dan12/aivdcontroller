@@ -8,12 +8,11 @@ import java.util.Arrays;
  */
 public class RecordData {
 
-    ArrayList<int[]> dataPoints = new ArrayList<>();
-    int[][] listToArray;
-    int curPos = 0;
-    long startTime;
-    long playbackStart;
-    private int hey;
+    private ArrayList<int[]> dataPoints = new ArrayList<>();
+    private int[][] listToArray;
+    private int curPos = 0;
+    private long startTime;
+    private long playbackStart;
 
     public RecordData(){}
 

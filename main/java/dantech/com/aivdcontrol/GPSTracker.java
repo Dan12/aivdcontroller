@@ -190,7 +190,7 @@ public class GPSTracker extends Service implements LocationListener, Drawable {
         paint.setColor(Color.BLACK);
         paint.setTextSize(18*density);
         if(canGetLocation) {
-            canvas.drawText(String.format("Lat: %3.8f  Long: %3.8f",getLatitude(),getLongitude()), 5, 436, paint);
+            canvas.drawText(String.format("Lat: %3.8f  Long: %3.8f",getLatitude(),getLongitude()), 5, 460*density, paint);
         }
     }
 

@@ -66,7 +66,7 @@ public class Menu implements Drawable {
             canvas.drawRect((openButtonX+5)*density, (openButtonY+5+(barHeight+5)*i)*density, (openButtonX+openButtonWidth-5)*density, (openButtonY+5+(barHeight+5)*i+barHeight)*density, paint);
 
         if(isOpen){
-            paint.setARGB(170, 100, 100, 100);
+            paint.setARGB(200, 100, 100, 100);
             canvas.drawRect(0,0,ViewContainer.viewWidth, ViewContainer.viewHeight, paint);
             for(Button b : buttons)
                 b.drawElements(canvas, paint, density);

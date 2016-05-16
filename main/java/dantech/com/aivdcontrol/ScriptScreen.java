@@ -1,5 +1,7 @@
 package dantech.com.aivdcontrol;
 
+import android.content.pm.ActivityInfo;
+
 import java.io.IOException;
 
 /**
@@ -9,7 +11,9 @@ public class ScriptScreen extends  ViewClass {
 
     private MainActivity mainActivity;
 
-    public ScriptScreen(MainActivity mainActivity){
+    public ScriptScreen(MainActivity activity){
+
+        mainActivity = activity;
 
         final GPSTracker gps = new GPSTracker(mainActivity);
         gps.getLocation();
@@ -108,6 +112,11 @@ public class ScriptScreen extends  ViewClass {
             }
         });
         addButton(b6);
+    }
+
+    @Override
+    public void setupView(){
+        mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
