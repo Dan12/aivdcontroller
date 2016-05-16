@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.MotionEvent;
 
+import java.io.IOException;
+
 /**
  * Created by Danweb on 5/15/16.
  */
@@ -30,11 +32,20 @@ public class ControlScreen extends ViewClass{
     private GPSTracker gps;
     private CompassDirection comp;
 
-    public ControlScreen(Activity mainActivity){
+    private Menu startViewMenu;
+
+    private MainActivity mainActivity;
+
+    private RecordData dataRecorder;
+
+    public ControlScreen(MainActivity activity){
+        mainActivity = activity;
+        dataRecorder = new RecordData();
+
         squareHalfSide = (ViewContainer.viewWidth-40)/2;
         centerCircleX = 20+squareHalfSide;
-        centerCircleY = ViewContainer.viewWidth-20-squareHalfSide;
-        swivelViewYCent = ViewContainer.viewWidth-40-squareHalfSide*2;
+        centerCircleY = ViewContainer.viewHeight-20-squareHalfSide;
+        swivelViewYCent = ViewContainer.viewHeight-40-squareHalfSide*2;
 
         gps = new GPSTracker(mainActivity);
         gps.getLocation();
@@ -48,8 +59,14 @@ public class ControlScreen extends ViewClass{
         //ord.Register(activity);
         //view.addDrawable(ord);
 
-        Menu startViewMenu = new Menu((int)ViewContainer.densViewWidth-50,(int)ViewContainer.densViewHeight-50);
+        startViewMenu = new Menu((int)ViewContainer.densViewWidth-50,(int)ViewContainer.densViewHeight-50);
 
+        setButtons();
+
+        this.addMenu(startViewMenu);
+    }
+
+    private void setButtons(){
         Button b1 = new Button(-1,30,"Update GPS");
         b1.setTouchListener(new TouchListener() {
             @Override
@@ -59,7 +76,51 @@ public class ControlScreen extends ViewClass{
         });
         startViewMenu.addButton(b1);
 
-        this.addMenu(startViewMenu);
+        Button b2 = new Button(-1,100,"Unstick");
+        b2.setTouchListener(new TouchListener() {
+            @Override
+            void onTouch() {
+                try {
+                    MainActivity.btHandler.sendData("0,0,0");
+                } catch (IOException e) {
+                    System.out.println("Error "+e);
+                }
+            }
+        });
+        startViewMenu.addButton(b2);
+
+        final Button b3 = new Button(-1,170,"Play");
+        b3.setTouchListener(new TouchListener() {
+            @Override
+            void onTouch() {
+                if(!isPlaying && !isRecording){
+                    b3.setText("Stop");
+                    isPlaying = true;
+                    dataRecorder.startPlayback();
+                } else if(isPlaying) {
+                    b3.setText("Play");
+                    isPlaying = false;
+                }
+            }
+        });
+        startViewMenu.addButton(b3);
+
+        final Button b4 = new Button(-1,240,"Record");
+        b4.setTouchListener(new TouchListener() {
+            @Override
+            void onTouch() {
+                if(!isRecording && !isPlaying){
+                    b4.setText("Stop");
+                    isRecording = true;
+                    dataRecorder.startRecord();
+                } else if(isRecording){
+                    b4.setText("Record");
+                    isRecording = false;
+                    dataRecorder.finishRecording();
+                }
+            }
+        });
+        startViewMenu.addButton(b4);
     }
 
     @Override
@@ -98,42 +159,89 @@ public class ControlScreen extends ViewClass{
         paint.setStyle(Paint.Style.FILL);
 
         paint.setColor(Color.BLACK);
-        paint.setTextSize(32);
+        paint.setTextSize(21*density);
         String[] lines = verbose.split("\n");
         for(int i = 0; i < lines.length; i++)
             canvas.drawText(lines[i], 30, swivelViewYCent-10-35*i, paint);
 
+        canvas.drawText("Latitude: "+String.format("%.8f",gps.getLatitude()), 30, swivelViewYCent-10-35*(lines.length), paint);
+        canvas.drawText("longitude: "+String.format("%.8f",gps.getLongitude()), 30, swivelViewYCent-10-35*(lines.length+1), paint);
+        canvas.drawText("Heading: "+String.format("%.8f",comp.getBearing()), 30, swivelViewYCent-10-35*(lines.length+2), paint);
+
         paint.setColor(Color.RED);
-        paint.setTextSize(38);
+        paint.setTextSize(25*density);
         if(isRecording)
-            canvas.drawText("Recording", 30, swivelViewYCent-10-35*lines.length, paint);
+            canvas.drawText("Recording", 30, swivelViewYCent-10-35*(lines.length+3), paint);
         else if(isPlaying)
-            canvas.drawText("Playing Recording", 30, swivelViewYCent-10-35*lines.length, paint);
+            canvas.drawText("Playing Recording", 30, swivelViewYCent-10-35*(lines.length+3), paint);
         else
-            canvas.drawText("Ready to play/record", 30, swivelViewYCent-10-35*lines.length, paint);
+            canvas.drawText("Ready to play/record", 30, swivelViewYCent-10-35*(lines.length+3), paint);
+
+        startViewMenu.drawElements(canvas, paint, density);
     }
 
     @Override
     public void touchEvent(MotionEvent event) {
-        int touchX = (int)event.getX();
-        int touchY = (int)event.getY();
-        if(!isPlaying){
-            if(touchY > ViewContainer.viewHeight-ViewContainer.viewWidth){
-                if(touchX < squareHalfSide*0.15)
-                    touchX = (int) (squareHalfSide*0.15);
-                if(touchX > ViewContainer.viewWidth-squareHalfSide*0.15)
-                    touchX = (int) (ViewContainer.viewWidth-squareHalfSide*0.15);
-                if(touchY < (ViewContainer.viewHeight-ViewContainer.viewWidth)+squareHalfSide*0.15)
-                    touchY = (int) ((ViewContainer.viewHeight-ViewContainer.viewWidth)+squareHalfSide*0.15);
-                if(touchY > ViewContainer.viewHeight-squareHalfSide*0.15)
-                    touchY = (int) (ViewContainer.viewHeight-squareHalfSide*0.15);
-                knobXDisp = touchX - centerCircleX;
-                knobYDisp = touchY - centerCircleY;
-            }
-            else{
+
+        if(startViewMenu != null && event.getAction() == MotionEvent.ACTION_DOWN)
+            startViewMenu.touchEvent(event);
+
+        if(startViewMenu == null || !startViewMenu.isMenuOpen()){
+            if(event.getAction() == MotionEvent.ACTION_UP){
                 knobXDisp = 0;
                 knobYDisp = 0;
             }
+            else {
+                int touchX = (int) event.getX();
+                int touchY = (int) event.getY();
+                if (!isPlaying) {
+                    if (touchY > ViewContainer.viewHeight - ViewContainer.viewWidth) {
+                        if (touchX < squareHalfSide * 0.15)
+                            touchX = (int) (squareHalfSide * 0.15);
+                        if (touchX > ViewContainer.viewWidth - squareHalfSide * 0.15)
+                            touchX = (int) (ViewContainer.viewWidth - squareHalfSide * 0.15);
+                        if (touchY < (ViewContainer.viewHeight - ViewContainer.viewWidth) + squareHalfSide * 0.15)
+                            touchY = (int) ((ViewContainer.viewHeight - ViewContainer.viewWidth) + squareHalfSide * 0.15);
+                        if (touchY > ViewContainer.viewHeight - squareHalfSide * 0.15)
+                            touchY = (int) (ViewContainer.viewHeight - squareHalfSide * 0.15);
+                        knobXDisp = touchX - centerCircleX;
+                        knobYDisp = touchY - centerCircleY;
+                    } else {
+                        knobXDisp = 0;
+                        knobYDisp = 0;
+                    }
+                }
+            }
+
         }
+    }
+
+    @Override
+    public void recievedBTMessage(String message){
+        verbose = message;
+        if(isPlaying){
+            int[] point = dataRecorder.getPoint();
+            if(point[0] != Integer.MIN_VALUE) {
+                knobXDisp = point[0];
+                knobYDisp = point[1];
+            }
+            else{
+                isPlaying = false;
+                knobXDisp = 0;
+                knobYDisp = 0;
+                mainActivity.toastMessage("Finished playback");
+            }
+        }
+
+        try {
+            MainActivity.btHandler.sendData("0,"+(int)map(knobXDisp,-squareHalfSide,squareHalfSide,-200,200)+","+(int)map(knobYDisp,-squareHalfSide,squareHalfSide,-200,200));
+        } catch (IOException e) {e.printStackTrace();}
+
+        if(isRecording)
+            dataRecorder.recordPoint(knobXDisp, knobYDisp);
+    }
+
+    public static double map(double x, double in_min, double in_max, double out_min, double out_max){
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 }

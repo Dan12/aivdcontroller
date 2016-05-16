@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
         view.initDimensions(dm.density, dm.widthPixels, dm.heightPixels);
 
         view.addView(new ControlScreen(this));
+        view.addView(new ScriptScreen(this));
 
         setContentView(view);
 

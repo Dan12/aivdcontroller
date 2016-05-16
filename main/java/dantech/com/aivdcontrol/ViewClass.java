@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class ViewClass {
 
     private ArrayList<Drawable> drawables = new ArrayList<>();
-    private ArrayList<Touchable> touchables = new ArrayList<>();
-    private Menu menu;
+    private ArrayList<Button> buttons = new ArrayList<>();
+    public Menu menu;
 
     public ViewClass() {}
 
@@ -30,16 +30,17 @@ public class ViewClass {
         menu = m;
     }
 
-    public void addTouchable(Touchable t){
-        touchables.add(t);
+    public void addButton(Button b){
+        buttons.add(b);
+        addDrawable(b);
     }
 
     public void touchEvent(MotionEvent event){
         if(menu == null || !menu.isMenuOpen())
-            for(Touchable t : touchables)
-                t.onTouch(event);
+            for(Button b : buttons)
+                b.touchEvent(event);
 
-        if(menu != null)
+        if(menu != null && event.getAction() == MotionEvent.ACTION_DOWN)
             menu.touchEvent(event);
     }
 

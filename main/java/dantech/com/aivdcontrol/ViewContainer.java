@@ -34,7 +34,8 @@ public class ViewContainer extends View{
         b1.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                // viewOn = 0
+                if(views.size() > 0)
+                    viewOn = 0;
             }
         });
         viewNavigation.addButton(b1);
@@ -43,28 +44,40 @@ public class ViewContainer extends View{
         b2.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                // viewOn = 1
+                if(views.size() > 1)
+                    viewOn = 1;
             }
         });
         viewNavigation.addButton(b2);
 
         Button b3 = new Button(-1,170,"Run Foxtrot");
-        b2.setTouchListener(new TouchListener() {
+        b3.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                // viewOn = 1
+                if(views.size() > 2)
+                    viewOn = 2;
             }
         });
         viewNavigation.addButton(b3);
 
         Button b4 = new Button(-1,240,"Color Follow");
-        b2.setTouchListener(new TouchListener() {
+        b4.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
-                // viewOn = 1
+                if(views.size() > 3)
+                    viewOn = 3;
             }
         });
         viewNavigation.addButton(b4);
+
+        Button b5 = new Button(-1,310,"Connect");
+        b5.setTouchListener(new TouchListener() {
+            @Override
+            void onTouch() {
+                MainActivity.btHandler.findBT();
+            }
+        });
+        viewNavigation.addButton(b5);
     }
 
     public void addView(ViewClass v){
@@ -101,11 +114,11 @@ public class ViewContainer extends View{
     }
 
     public void touchEvent(MotionEvent event){
+        viewNavigation.touchEvent(event);
+
         if(!viewNavigation.isMenuOpen())
             if(!views.isEmpty())
                 views.get(viewOn).touchEvent(event);
-
-        viewNavigation.touchEvent(event);
     }
 
     public void recievedBTMessage(String message){

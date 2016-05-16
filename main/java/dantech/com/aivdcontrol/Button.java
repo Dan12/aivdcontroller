@@ -43,6 +43,10 @@ public class Button implements Drawable{
         this.text = t;
     }
 
+    public String getText(){
+        return this.text;
+    }
+
     public void drawElements(Canvas canvas, Paint paint, float density) {
         if(shadowPaint == null){
             shadowPaint = new Paint();
