@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class Menu implements Drawable {
 
     private ArrayList<Button> buttons = new ArrayList<>();
+    private ArrayList<NumberSlider> sliders = new ArrayList<>();
     private boolean isOpen = false;
     private int openButtonX, openButtonY;
     private int openButtonWidth = 40;
@@ -41,10 +42,17 @@ public class Menu implements Drawable {
         buttons.add(b);
     }
 
+    public void addSlider(NumberSlider n){
+        sliders.add(n);
+    }
+
     public void touchEvent(MotionEvent event){
-        if(isOpen)
-            for(Button b : buttons)
+        if(isOpen) {
+            for (Button b : buttons)
                 b.touchEvent(event);
+            for(NumberSlider n : sliders)
+                n.onTouch(event);
+        }
 
         float tx = event.getX()/ViewContainer.density;
         float ty = event.getY()/ViewContainer.density;
@@ -70,6 +78,8 @@ public class Menu implements Drawable {
             canvas.drawRect(0,0,ViewContainer.viewWidth, ViewContainer.viewHeight, paint);
             for(Button b : buttons)
                 b.drawElements(canvas, paint, density);
+            for(NumberSlider n : sliders)
+                n.drawElements(canvas, paint, density);
         }
     }
 }

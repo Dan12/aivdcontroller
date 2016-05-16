@@ -240,14 +240,10 @@ public class ControlScreen extends ViewClass{
         }
 
         try {
-            MainActivity.btHandler.sendData("0,"+(int)map(knobXDisp,-squareHalfSide,squareHalfSide,-200,200)+","+(int)map(knobYDisp,-squareHalfSide,squareHalfSide,-200,200));
+            MainActivity.btHandler.sendData("0,"+(int)Functions.map(knobXDisp,-squareHalfSide,squareHalfSide,-200,200)+","+(int)Functions.map(knobYDisp,-squareHalfSide,squareHalfSide,-200,200));
         } catch (IOException e) {e.printStackTrace();}
 
         if(isRecording)
             dataRecorder.recordPoint(knobXDisp, knobYDisp);
-    }
-
-    public static double map(double x, double in_min, double in_max, double out_min, double out_max){
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 }

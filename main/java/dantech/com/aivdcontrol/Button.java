@@ -39,7 +39,7 @@ public class Button implements Drawable{
     public void touchEvent(MotionEvent event){
         float x = event.getX()/ViewContainer.density;
         float y = event.getY()/ViewContainer.density;
-        if(x > xPos && x < xPos+width && y > yPos && y < yPos+height){
+        if(x > xPos && x < xPos+width && y > yPos && y < yPos+height && touchListener != null){
             touchListener.onTouch();
         }
     }

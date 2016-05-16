@@ -30,7 +30,8 @@ public class MainActivity extends Activity {
 
         view.addView(new ControlScreen(this));
         view.addView(new ScriptScreen(this));
-        view.addView(new FoxScreen(this));
+        FoxScreen foxScreen = new FoxScreen(this, this);
+        view.addView(foxScreen.getViewClass());
 
         setContentView(view);
 
@@ -74,7 +75,7 @@ public class MainActivity extends Activity {
     public void setOrientation(int orientation){
 
         setRequestedOrientation(orientation);
-        setDisplayMetrics();
+        //setDisplayMetrics();
     }
 
     public void setDisplayMetrics(){
