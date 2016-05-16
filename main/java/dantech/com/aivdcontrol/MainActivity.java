@@ -5,6 +5,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 /**
  * Created by Danweb on 5/14/16.
@@ -12,6 +15,7 @@ import android.view.MotionEvent;
 public class MainActivity extends Activity {
 
     private ViewContainer view;
+    public static BluetoothHandler btHandler;
 
     // basically constructor, called when app starts
     @Override
@@ -26,12 +30,16 @@ public class MainActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         view.initDimensions(dm.density, dm.widthPixels, dm.heightPixels);
 
-        InitSensors.setMainActivity(this);
-
-        SetViews.setViews(view);
+        view.addView(new ControlScreen(this));
 
         setContentView(view);
 
+        btHandler = new BluetoothHandler(this);
+
+    }
+
+    public ViewContainer getViewContainer(){
+        return view;
     }
 
     @Override
@@ -45,5 +53,22 @@ public class MainActivity extends Activity {
         return super.onTouchEvent(event);
     }
 
+    public void toastMessage(final String m){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getApplicationContext(), m, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    protected void onDestroy(){
+        System.out.println("Destroyed");
+        super.onDestroy();
+        System.out.println(isFinishing());
+        try {
+            btHandler.closeBT();
+        } catch (IOException e) {e.printStackTrace();}
+        finish();
+    }
 
 }

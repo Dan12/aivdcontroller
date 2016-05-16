@@ -3,6 +3,7 @@ package dantech.com.aivdcontrol;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 
 /**
@@ -27,8 +28,8 @@ public class Button implements Drawable{
     }
 
     public void touchEvent(MotionEvent event){
-        float x = event.getX();
-        float y = event.getY();
+        float x = event.getX()/ViewContainer.density;
+        float y = event.getY()/ViewContainer.density;
         if(x > xPos && x < xPos+width && y > yPos && y < yPos+height){
             touchListener.onTouch();
         }
@@ -36,6 +37,10 @@ public class Button implements Drawable{
 
     public void setTouchListener(TouchListener tl){
         touchListener = tl;
+    }
+
+    public void setText(String t){
+        this.text = t;
     }
 
     public void drawElements(Canvas canvas, Paint paint, float density) {
@@ -49,6 +54,7 @@ public class Button implements Drawable{
         canvas.drawRect(xPos*density,yPos*density,(xPos+width)*density,(yPos+height)*density, paint);
         paint.setColor(Color.WHITE);
         paint.setTextSize(34*density);
-        canvas.drawText(text, (xPos+5)*density, (yPos+height-14)*density, paint);
+        float textWidth = paint.measureText(text);
+        canvas.drawText(text, (xPos+5)*density+(width*density-textWidth)/2, (yPos+height-14)*density, paint);
     }
 }

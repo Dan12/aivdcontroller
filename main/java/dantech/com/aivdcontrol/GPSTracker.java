@@ -83,21 +83,19 @@ public class GPSTracker extends Service implements LocationListener, Drawable {
                 }
                 // If GPS enabled, get latitude/longitude using GPS Services
                 if (isGPSEnabled) {
-                    if (location == null || true) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        System.out.println("GPS Enabled");
-                        System.out.println(locationManager == null);
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                gotCoordFromGPS = true;
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    System.out.println("GPS Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        System.out.println("GPS Location is null? "+(location == null));
+                        if (location != null) {
+                            gotCoordFromGPS = true;
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
                         }
                     }
                 }
@@ -192,8 +190,8 @@ public class GPSTracker extends Service implements LocationListener, Drawable {
         paint.setColor(Color.BLACK);
         paint.setTextSize(24*density);
         if(canGetLocation) {
-            canvas.drawText("Latitude: " + latitude, 5, 50, paint);
-            canvas.drawText("Longitude: " + longitude, 5, 100, paint);
+            canvas.drawText("Latitude: " + String.format("%.10f",latitude), 5, 50, paint);
+            canvas.drawText("Longitude: " + String.format("%.10f",longitude), 5, 100, paint);
             canvas.drawText("Got GPS: " + gotCoordFromGPS, 5, 150, paint);
         }
     }

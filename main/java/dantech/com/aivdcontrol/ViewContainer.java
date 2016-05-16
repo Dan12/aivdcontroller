@@ -30,7 +30,7 @@ public class ViewContainer extends View{
     }
 
     private void initButtons(){
-        Button b1 = new Button(-1,50,"Control Verbose");
+        Button b1 = new Button(-1,30,"Control");
         b1.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
@@ -48,7 +48,7 @@ public class ViewContainer extends View{
         });
         viewNavigation.addButton(b2);
 
-        Button b3 = new Button(-1,150,"Run Foxtrot");
+        Button b3 = new Button(-1,170,"Run Foxtrot");
         b2.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
@@ -57,7 +57,7 @@ public class ViewContainer extends View{
         });
         viewNavigation.addButton(b3);
 
-        Button b4 = new Button(-1,200,"Color Follow");
+        Button b4 = new Button(-1,240,"Color Follow");
         b2.setTouchListener(new TouchListener() {
             @Override
             void onTouch() {
@@ -89,23 +89,27 @@ public class ViewContainer extends View{
     }
 
     public void initDimensions(float dens, int width, int height){
-        System.out.println("Density: "+density);
         density = dens;
         viewWidth = width;
-        viewWidth = height;
+        viewHeight = height;
         densViewWidth = width/density;
         densViewHeight = height/density;
 
-        viewNavigation = new Menu((int)densViewWidth-50,(int)densViewHeight-50);
+        viewNavigation = new Menu(10,(int)densViewHeight-50);
 
         initButtons();
     }
 
     public void touchEvent(MotionEvent event){
         if(!viewNavigation.isMenuOpen())
-            for(ViewClass v : views)
-                v.touchEvent(event);
+            if(!views.isEmpty())
+                views.get(viewOn).touchEvent(event);
 
         viewNavigation.touchEvent(event);
     }
+
+    public void recievedBTMessage(String message){
+        views.get(viewOn).recievedBTMessage(message);
+    }
+
 }

@@ -21,7 +21,7 @@ public class Menu implements Drawable {
 
 
     public Menu(int x, int y){
-        Button b = new Button(-1,ViewContainer.viewHeight-100,"Back");
+        Button b = new Button(-1,(int)ViewContainer.densViewHeight-70,"Back");
 
         b.setTouchListener(new TouchListener() {
             @Override
@@ -31,8 +31,6 @@ public class Menu implements Drawable {
         });
 
         buttons.add(b);
-
-        System.out.println("New menu back button at: "+ViewContainer.viewHeight);
 
         openButtonX = x;
         openButtonY = y;

@@ -46,4 +46,8 @@ public class ViewClass {
     public void addDrawable(Drawable d){
         drawables.add(d);
     }
+
+    public void recievedBTMessage(String message){
+
+    }
 }
