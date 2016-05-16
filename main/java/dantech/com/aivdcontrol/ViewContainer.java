@@ -90,7 +90,8 @@ public class ViewContainer extends View{
     }
 
     private void changeView(){
-        views.get(viewOn).setupView();
+        for(int i = 0; i < views.size(); i++)
+            views.get(i).setupView(i, viewOn);
     }
 
     public void addView(ViewClass v){

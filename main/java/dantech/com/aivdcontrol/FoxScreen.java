@@ -7,8 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -26,8 +26,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
     private boolean isPreviewRunning = false;
     private volatile byte[] yuvData;
     private Bitmap bmp;
-    private int width;
-    private int height;
+    public int width;
+    public int height;
     private long startTime = System.nanoTime();
 
     private ObjectDetector objectDetector1;
@@ -37,6 +37,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     private int numSetting = 3;
 
+    private boolean isFollow = false;
+
     public FoxScreen(Context context, MainActivity activity){
         super(context);
 
@@ -44,6 +46,8 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
         mHolder = getHolder();
         mHolder.addCallback(this);
+        System.out.println(mHolder);
+        System.out.println("Initializing surfaceview");
 
         viewClass = new DrawView();
 
@@ -58,6 +62,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        System.out.println("Surface Created");
         synchronized (this) {
             if (isPreviewRunning)
                 return;
@@ -66,13 +71,13 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
             mCamera = Camera.open();
 
-            isPreviewRunning = true;
+            //isPreviewRunning = true;
             Camera.Size size = mCamera.getParameters().getPreviewSize();
             width = size.width;
             height = size.height;
-            objectDetector1.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
-            objectDetector2.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
-            objectDetector3.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
+//            objectDetector1.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
+//            objectDetector2.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
+//            objectDetector3.setDims(width/ObjectDetector.resolution, height/ObjectDetector.resolution);
             System.out.println(width + "," + height);
 
             mCamera.setParameters(CameraParams.getParameters(mCamera));
@@ -86,7 +91,6 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
                 Log.e("Camera", "mCamera.setPreviewDisplay(holder);");
             }
 
-            mCamera.startPreview();
             mCamera.setPreviewCallback(this);
 
         }
@@ -147,10 +151,12 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     private class DrawView extends ViewClass{
 
-        public DrawView() {
+        public DrawView() {}
+
+        public void initMenu(){
             menu = new Menu((int) ViewContainer.densViewWidth - 50, 10);
 
-            final NumberSlider n1 = new NumberSlider("Tolerance", 10, 90, 35, true, 100, 50, 100, 32);
+            final NumberSlider n1 = new NumberSlider("Tolerance", 10, 90, 35, true, 30, 30, 100, 32);
             n1.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -159,7 +165,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
             });
             menu.addSlider(n1);
 
-            final NumberSlider n2 = new NumberSlider("Resolution", 1, 16, 4, true, 100, 175, 100, 32);
+            final NumberSlider n2 = new NumberSlider("Resolution", 1, 16, 4, true, 30, 130, 100, 32);
             n2.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -168,7 +174,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
             });
             menu.addSlider(n2);
 
-            final NumberSlider n3 = new NumberSlider("Min Shape Dim", 1, 40, 4, true, 100, 300, 100, 32);
+            final NumberSlider n3 = new NumberSlider("Min Shape Dim", 1, 40, 4, true, 30, 230, 100, 32);
             n3.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -177,7 +183,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
             });
             menu.addSlider(n3);
 
-            final NumberSlider n4 = new NumberSlider("Min Shape Dens", 0, 1, 0.5f, false, 350, 50, 100, 32);
+            final NumberSlider n4 = new NumberSlider("Min Shape Dens", 0, 1, 0.5f, false, 200, 30, 100, 32);
             n4.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -186,7 +192,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
             });
             menu.addSlider(n4);
 
-            final NumberSlider n5 = new NumberSlider("Shape Dens Check", 1, 16, 10, true, 350, 175, 100, 32);
+            final NumberSlider n5 = new NumberSlider("Shape Dens Check", 1, 16, 10, true, 200, 130, 100, 32);
             n5.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -195,7 +201,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
             });
             menu.addSlider(n5);
 
-            final NumberSlider n6 = new NumberSlider("Zoom", 1, 30, 1, true, 350, 300, 150, 50);
+            final NumberSlider n6 = new NumberSlider("Zoom", 1, 30, 1, true, 380, 30, 100, 32);
             n6.addTouchListener(new TouchListener() {
                 @Override
                 void onTouch() {
@@ -206,8 +212,25 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
         }
 
         @Override
-        public void setupView(){
-            mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        public void setupView(int thisInd, int curInd){
+            if(curInd == 2 || curInd == 3) {
+                initMenu();
+
+                if(!isPreviewRunning)
+                    mCamera.startPreview();
+                isPreviewRunning = true;
+
+                mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                if(curInd == 3)
+                    isFollow = true;
+                else
+                    isFollow = false;
+                mainActivity.toastMessage("Is Following: "+isFollow);
+            }
+            else {
+                mCamera.stopPreview();
+                isPreviewRunning = false;
+            }
         }
 
         @Override
@@ -220,31 +243,72 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
                 int[] rgbints = YUVDecoder.decodeYUV(yuvData, width, height, res);
                 yuvData = null;
                 bmp = Bitmap.createScaledBitmap(Bitmap.createBitmap(rgbints, 0, width / ObjectDetector.resolution, width / ObjectDetector.resolution, height / ObjectDetector.resolution, Bitmap.Config.RGB_565),width,height,false);
-                objectDetector1.setDims(width/res,height/res);
-                objectDetector1.updateRoutine(rgbints);
 
+                runObjectDetector(res, rgbints);
 
-                objectDetector2.setDims(width/res,height/res);
-                objectDetector2.updateRoutine(rgbints);
-
-                objectDetector3.setDims(width/res,height/res);
-                objectDetector3.updateRoutine(rgbints);
-
-
-                // TODO: add support for multiple color detection by making several objectDetector objects and passing them the rgbints array after they have been processed by the previous object detector
                 sendData = true;
             }
             if(bmp != null)
                 canvas.drawBitmap(bmp,0,0,null);
-            objectDetector1.drawObjectDetector(canvas);
-            objectDetector2.drawObjectDetector(canvas);
-            objectDetector3.drawObjectDetector(canvas);
+
+            drawObjectDetector(canvas);
 
             menu.drawElements(canvas, paint, density);
 
+            sendBTMessage();
+
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(24*density);
+            canvas.drawText((isFollow ? "Follow" : "Foxtrot"), width+10, 100*density, paint);
+
             long et = System.nanoTime();
             System.out.println("Drawing and Computations completed in " + ((et - st) / 1000000) + "ms");
-            invalidate();
+            //invalidate();
+        }
+
+        @Override
+        public void touchEvent(MotionEvent event){
+            if(menu == null || !menu.isMenuOpen())
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    getObjectDetectorForTouchEvent().touchDown(event);
+                }
+
+            if(menu != null && event.getAction() == MotionEvent.ACTION_DOWN)
+                menu.touchEvent(event);
+        }
+    }
+
+    public void runObjectDetector(int res, int[] rgbints){
+        objectDetector1.setDims(width/res,height/res);
+        objectDetector1.updateRoutine(rgbints);
+
+        if(!isFollow) {
+            objectDetector2.setDims(width / res, height / res);
+            objectDetector2.updateRoutine(rgbints);
+
+            objectDetector3.setDims(width / res, height / res);
+            objectDetector3.updateRoutine(rgbints);
+        }
+    }
+
+    public void drawObjectDetector(Canvas canvas){
+        objectDetector1.drawObjectDetector(canvas);
+
+        if(!isFollow) {
+            objectDetector2.drawObjectDetector(canvas);
+            objectDetector3.drawObjectDetector(canvas);
+        }
+
+    }
+
+    public void sendBTMessage(){
+        if(sendData) {
+            int[] shapeInfo = getCenterX();
+            try {
+                MainActivity.btHandler.sendData((isFollow ? "9," : "8,") + shapeInfo[0] + "," + shapeInfo[1] + "," + width);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -271,13 +335,17 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
     }
 
     public ObjectDetector getObjectDetectorForTouchEvent(){
-        numSetting = numSetting%3+1;
-        mainActivity.toastMessage("Setting number "+numSetting);
-        if(numSetting == 1)
+        if(isFollow)
             return objectDetector1;
-        else if(numSetting == 2)
-            return objectDetector2;
-        else
-            return objectDetector3;
+        else {
+            numSetting = numSetting % 3 + 1;
+            mainActivity.toastMessage("Setting number " + numSetting);
+            if (numSetting == 1)
+                return objectDetector1;
+            else if (numSetting == 2)
+                return objectDetector2;
+            else
+                return objectDetector3;
+        }
     }
 }

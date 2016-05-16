@@ -52,5 +52,5 @@ public class ViewClass {
 
     }
 
-    public void setupView(){}
+    public void setupView(int thisInd, int curInd){}
 }

@@ -115,7 +115,7 @@ public class ScriptScreen extends  ViewClass {
     }
 
     @Override
-    public void setupView(){
+    public void setupView(int thisInd, int curInd){
         mainActivity.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 

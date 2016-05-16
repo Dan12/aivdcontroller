@@ -37,13 +37,11 @@ public class CompassDirection implements Drawable{
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
             System.out.println("Accuracy changed:"+accuracy);
         }
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-            // TODO Auto-generated method stub
             compassBearing = (float)event.values[0];
             float bearing;
             bearing = compassBearing - templeBearing;

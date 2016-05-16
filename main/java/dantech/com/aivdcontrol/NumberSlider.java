@@ -23,7 +23,7 @@ public class NumberSlider implements Drawable {
     private int height;
     private int sliderX;
     private int padding = 4;
-    private int textSize = 40;
+    private int textSize = 30;
     private TouchListener touchListener;
 
     public NumberSlider(String t, int mi, int ma, float def, boolean i, int x, int y, int w, int h){
@@ -49,7 +49,10 @@ public class NumberSlider implements Drawable {
     }
 
     public boolean onTouch(MotionEvent e) {
-        if(e.getX() >= xPos && e.getX() <= xPos+width && e.getY() >= yPos && e.getY() <= yPos+height){
+        int touchX = (int)(e.getX()/ViewContainer.density);
+        int touchY = (int)(e.getY()/ViewContainer.density);
+
+        if(touchX >= xPos && touchX <= xPos+width && touchY >= yPos && touchY <= yPos+height){
             if(intValue)
                 val = (int) Functions.map(e.getX(), xPos, xPos + width, minVal, maxVal);
             else

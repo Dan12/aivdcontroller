@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -22,6 +24,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceStace){
         super.onCreate(savedInstanceStace);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         view = new ViewContainer(this);
 
         view.setBackgroundColor(Color.WHITE);
@@ -32,8 +36,18 @@ public class MainActivity extends Activity {
         view.addView(new ScriptScreen(this));
         FoxScreen foxScreen = new FoxScreen(this, this);
         view.addView(foxScreen.getViewClass());
+        // second instance will be follwo screen
+        view.addView(foxScreen.getViewClass());
 
-        setContentView(view);
+        RelativeLayout mRelativeLayout = new RelativeLayout(this);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        // add foxScreen to layout to call surface create
+        mRelativeLayout.addView(foxScreen);
+
+        mRelativeLayout.addView(view);
+        setContentView(mRelativeLayout);
+
+        //setContentView(view);
 
         btHandler = new BluetoothHandler(this);
 
@@ -73,9 +87,9 @@ public class MainActivity extends Activity {
     }
 
     public void setOrientation(int orientation){
-
+        // view selection menu closes when this is called because setDisplayMetrics reinitialized the menu
         setRequestedOrientation(orientation);
-        //setDisplayMetrics();
+        setDisplayMetrics();
     }
 
     public void setDisplayMetrics(){
