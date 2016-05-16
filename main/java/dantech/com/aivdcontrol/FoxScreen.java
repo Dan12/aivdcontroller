@@ -227,7 +227,6 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
                     isFollow = true;
                 else
                     isFollow = false;
-                mainActivity.toastMessage("Is Following: "+isFollow);
             }
             else if (curInd != 2 && curInd != 3){
                 mCamera.stopPreview();
@@ -323,9 +322,13 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     public int[] getCenterX(){
         sendData = false;
-        ShapeRectangle[] bestRect = new ShapeRectangle[]{objectDetector1.getBestShapeRect(), objectDetector2.getBestShapeRect(), objectDetector3.getBestShapeRect()};
+        ShapeRectangle[] bestRect;
+        if(isFollow)
+            bestRect = new ShapeRectangle[]{objectDetector1.getBestShapeRect()};
+        else
+            bestRect = new ShapeRectangle[]{objectDetector1.getBestShapeRect(), objectDetector2.getBestShapeRect(), objectDetector3.getBestShapeRect()};
         int bestNum = 0;
-        for(int i = 1; i < 3; i++){
+        for(int i = 1; i < bestRect.length; i++){
             if(bestRect[bestNum] == null)
                 bestNum = i;
             else if(bestRect[i] != null && bestRect[bestNum].getFitness() < bestRect[i].getFitness())
