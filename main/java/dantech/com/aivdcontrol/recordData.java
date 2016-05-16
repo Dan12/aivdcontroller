@@ -13,6 +13,7 @@ public class RecordData {
     int curPos = 0;
     long startTime;
     long playbackStart;
+    private int hey;
 
     public RecordData(){}
 
