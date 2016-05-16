@@ -16,6 +16,8 @@ public class ScriptScreen extends  ViewClass {
         if(!gps.canGetLocation())
             gps.showSettingsAlert();
 
+        addDrawable(gps);
+
         final CompassDirection comp = new CompassDirection();
         comp.getDirection(mainActivity);
 
