@@ -101,6 +101,7 @@ public class FoxScreen extends SurfaceView implements SurfaceHolder.Callback, Ca
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        System.out.println("Destroy Camera");
         synchronized (this) {
             try {
                 if (mCamera != null) {

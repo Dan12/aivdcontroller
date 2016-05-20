@@ -22,6 +22,7 @@ public class ObjectDetector {
     private int targetCol = -1;
     private ArrayList<ShapeRectangle> shapes;
     private ShapeRectangle bestRect;
+    private ShapeRectangle prevBestRect;
     private int width;
     private int height;
     private int[] primaryColor;
@@ -40,6 +41,7 @@ public class ObjectDetector {
         long st = System.nanoTime();
         if(targetCol != -1 && targetRow != -1) {
             target = Functions.getRGB(rgb, targetRow, targetCol, width);
+            bestRect = new ShapeRectangle(targetCol-1,targetRow-1,targetCol+1,targetRow+1,0);
             targetRow = -1;
             targetCol = -1;
         }
@@ -51,13 +53,20 @@ public class ObjectDetector {
             System.out.println("Edge Detect run in "+((et-st)/1000000)+"ms");
     }
 
-    // TODO: incorporate previous position in fitness function
+    // TODO: maybe make fitness function better, more tests
     private void setBestRect(){
+        if(bestRect != null)
+            prevBestRect = bestRect;
+        if(prevBestRect == null)
+            bestRect = new ShapeRectangle(0,0,1,1,0);
         if(!shapes.isEmpty()) {
             bestRect = shapes.get(0);
-            for (int i = 1; i < shapes.size(); i++)
+            shapes.get(0).setFitness(prevBestRect);
+            for (int i = 1; i < shapes.size(); i++) {
+                shapes.get(i).setFitness(prevBestRect);
                 if (shapes.get(i).getFitness() > bestRect.getFitness())
                     bestRect = shapes.get(i);
+            }
             bestRect.best();
         }else{
             bestRect = null;

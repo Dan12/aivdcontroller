@@ -20,6 +20,11 @@ public class ShapeRectangle {
     private Paint paint = new Paint();
     private boolean isBest = false;
 
+    private double densWeight = 20;
+    private double sizeWeight = 0.0001;
+    private double simWeight = 0.0005;
+    private double fitness = 0;
+
     public ShapeRectangle(){
         minX = Integer.MAX_VALUE;
         minY = Integer.MAX_VALUE;
@@ -27,6 +32,16 @@ public class ShapeRectangle {
         maxY = Integer.MIN_VALUE;
         rnd = new Random();
         density = 0;
+    }
+
+    public ShapeRectangle(int ix, int iy, int ax, int ay, double f){
+        minX = ix;
+        minY = iy;
+        maxX = ax;
+        maxY = ay;
+        rnd = new Random();
+        density = 0;
+        fitness = f;
     }
 
     public void drawSquare(Canvas canvas, int[] bestColor){
@@ -54,12 +69,21 @@ public class ShapeRectangle {
         return density;
     }
 
+    public void setFitness(ShapeRectangle prevBest){
+        this.fitness = sizeWeight*getArea()+densWeight*density+simWeight*similarity(prevBest);
+    }
+
     public double getFitness(){
-        return 0.5*getArea()+0.5*density;
+        return fitness;
+    }
+
+    public double similarity(ShapeRectangle other){
+        double distSim = (other.getCenterX()-getCenterX())*(other.getCenterX()-getCenterX())+(other.getCenterY()-getCenterY())*(other.getCenterY()-getCenterY());
+        return (ViewContainer.viewWidth*ViewContainer.viewWidth)+(ViewContainer.viewHeight*ViewContainer.viewHeight)-distSim;
     }
 
     private int getArea(){
-        return (maxX-minX)*(maxY-minY);
+        return (maxX-minX)*(maxY-minY)*ObjectDetector.resolution*ObjectDetector.resolution;
     }
 
     public boolean isValid(){
